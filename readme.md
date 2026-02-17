@@ -57,8 +57,107 @@ La sonda optimiza el espacio de memoria empaquetando la fecha y hora en un bloqu
    ```bash
    python main.py
 
-Configuración de Driver (Windows):
-Es posible que se necesite reemplazar el driver original de la sonda por WinUSB utilizando la herramienta Zadig https://zadig.akeo.ie/ para que PyUSB tenga acceso al dispositivo.
+IMPORTANTE
+
+**WinUSB** es un driver genérico que ya viene incluido dentro de Windows, pero el sistema no lo asigna automáticamente a dispositivos como tu sonda (que normalmente se identifican como "HID"). La herramienta **Zadig** es la que se encarga de hacer el "puente".
+
+Pasos exactos para hacerlo correctamente:
+
+### Pasos con Zadig:
+
+1. **Descarga Zadig:** Ve a [zadig.akeo.ie](https://zadig.akeo.ie/) y descarga el ejecutable (no requiere instalación).
+2. **Conecta la Sonda:** Asegúrate de que la sonda esté conectada al puerto USB.
+3. **Ejecuta Zadig:**
+* Ve al menú **Options** y marca **List All Devices**.
+* En el desplegable principal, busca tu sonda (debería aparecer algo como "STM32..." o "USB HID Device" con el ID `0483 5750`).
+
+
+4. **Selecciona el Driver:**
+* A la derecha de la flecha verde, asegúrate de que esté seleccionado **WinUSB (v6.x.x.x)**.
+
+
+5. **Reemplaza el Driver:** Haz clic en el botón grande que dice **Replace Driver** (o *Reinstall Driver*).
+
+
+
+### ¿Por qué hacemos esto?
+
+Por defecto, Windows usa un driver "HID" para la sonda. Ese driver es muy celoso y no deja que librerías externas como `pyusb` (que usa tu script) le den órdenes directas. Al cambiarlo a **WinUSB**, le quitas el control a Windows y se lo das a tu aplicación de Python.
+
+### Una vez terminado el proceso:
+
+1. Vuelve a tu terminal en VS Code (con el `.venv` activo).
+2. Corre tu aplicación: `python main.py`.
+3. Prueba la **Opción 1** (Conectar).
+
+Si todo sale bien, la sonda debería responder "Sonda conectada correctamente" 
 
 📝 Notas de Versión
 v1.0.0: Implementación de driver USB, decodificación de bits y menú de gestión básica.
+
+## 🚀 Instalación rápida
+
+1. Clona el repositorio:
+   ```bash
+   git clone [https://github.com/Flav10R/PatrolApp.git](https://github.com/Flav10R/PatrolApp.git)
+   cd PatrolApp
+
+2. Instala las dependencias:
+   pip install -r requirements.txt
+
+3. Para ejecutar la **PatrolApp**, necesita instalar las "dependencias".
+
+   Crear el archivo `requirements.txt`
+
+   En la terminal, dentro de tu carpeta `PatrolApp`, crearlo automáticamente ejecutando:
+
+   pip freeze > requirements.txt
+   
+   **O mejor aún**, créalo manualmente para que sea más limpio y solo contenga lo estrictamente necesario.
+
+
+   pyusb==1.2.1
+   libusb-package==1.0.26.2
+
+
+
+   **Nota:**
+   Se ha incluido `libusb-package` porque en Windows ayuda muchísimo a que Python encuentre los drivers USB  sin complicaciones extras.
+
+
+### Cómo se instalan las librerías
+
+Ahora, cuando alguien descargue tu proyecto de GitHub, solo tendrá que abrir una terminal y escribir:
+
+
+   pip install -r requirements.txt
+
+
+Esto instalará todo de una sola vez.
+
+
+## 🚀 Instalación rápida de la aplicacion (git)
+
+1. Clona el repositorio:
+   
+   git clone [https://github.com/Flav10R/PatrolApp.git]
+   (https://github.com/Flav10R/PatrolApp.git)
+   
+   cd PatrolApp
+
+2. Subir los cambios a GitHub
+
+   git add .
+   git commit -m "Añadido archivo de requerimientos y guía de instalación"
+   git push origin main
+
+
+3. **Entorno Virtual (venv)**
+   Crear
+   python -m venv .venv
+   Activar
+   .venv\Scripts\activate 
+
+4. Instala las dependencias:
+   bash
+   pip install -r requirements.txt   

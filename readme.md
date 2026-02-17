@@ -54,7 +54,7 @@ La sonda optimiza el espacio de memoria empaquetando la fecha y hora en un bloqu
    - Backend de USB (libusb-1.0 o similar según el SO).
 
 2. **Ejecución:**
-   ```bash
+   
    python main.py
 
 IMPORTANTE
@@ -95,10 +95,10 @@ Si todo sale bien, la sonda debería responder "Sonda conectada correctamente"
 📝 Notas de Versión
 v1.0.0: Implementación de driver USB, decodificación de bits y menú de gestión básica.
 
-## 🚀 Instalación rápida
+## 🚀 Instalación rápida git
 
 1. Clona el repositorio:
-   ```bash
+   
    git clone [https://github.com/Flav10R/PatrolApp.git](https://github.com/Flav10R/PatrolApp.git)
    cd PatrolApp
 
@@ -136,7 +136,7 @@ Ahora, cuando alguien descargue tu proyecto de GitHub, solo tendrá que abrir un
 Esto instalará todo de una sola vez.
 
 
-## 🚀 Instalación rápida de la aplicacion (git)
+## 🚀 MantenimientoIstalacion de la aplicacion (git)
 
 1. Clona el repositorio:
    
@@ -145,19 +145,31 @@ Esto instalará todo de una sola vez.
    
    cd PatrolApp
 
-2. Subir los cambios a GitHub
-
-   git add .
-   git commit -m "Añadido archivo de requerimientos y guía de instalación"
-   git push origin main
 
 
-3. **Entorno Virtual (venv)**
+2. **Entorno Virtual (venv)**
+
    Crear
    python -m venv .venv
    Activar
    .venv\Scripts\activate 
 
-4. Instala las dependencias:
+3. Instalar las dependencias:
    bash
    pip install -r requirements.txt   
+
+# *** Mantenimineto ***
+1. Subir los cambios a GitHub
+
+   git add .
+   git commit -m "Añadido archivo de requerimientos y guía de instalación"
+   git push origin main
+   Utiles:
+   git rm -r --cached ~~build/ dist/~~ ~~*.spec~~ Borra los archivos agregados con add . que no deben subirse  
+
+# Compilar codigo
+1. intalar pyinstaller
+    pip install pyinstaller
+2. Ejecutar
+    pyinstaller --onefile --console --name PatrolApp_1.1  main.py
+    Usar --console ya que no tiene interfaz grafica

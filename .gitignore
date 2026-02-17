@@ -10,5 +10,5 @@ descarga_*.txt
 Thumbs.db
 # Archivos de compilacion
 build/
-dis/
+dist/
 *.spec

@@ -45,14 +45,29 @@ def ejecutar_app():
         elif op == "4":
             print("\nDescargando...")
             datos = sonda.descargar_datos()
+            # Ejemplo de uso en tu main.py:
+            datos = sonda.descargar_datos()
+
             if datos:
-                filename = f"descarga_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-                with open(filename, "w") as f:
-                    for r in datos:
-                        f.write(f"{r['tag']} {r['fecha'].strftime('%Y-%m-%d %H:%M:%S')}\n")
-                print(f"[EXITO] {len(datos)} registros guardados en {filename}")
+                print(f"Se descargaron {len(datos)} registros.")
+                for reg in datos:
+                    # Aquí aplicamos el formato solicitado: dd/mm/yyyy
+                    fecha_str = reg['fecha'].strftime("%d/%m/%Y %H:%M:%S")
+                    
+                    # Imprime: 0010006F0C09 16/02/2026 14:31:22
+                    print(f"{reg['tag']} {fecha_str}")
             else:
-                print("[?] No hay registros nuevos.")
+                print("No se encontraron nuevos registros.")
+            
+            ########
+            # if datos:
+            #     filename = f"descarga_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+            #     with open(filename, "w") as f:
+            #         for r in datos:
+            #             f.write(f"{r['tag']} {r['fecha'].strftime('%Y-%m-%d %H:%M:%S')}\n")
+            #     print(f"[EXITO] {len(datos)} registros guardados en {filename}")
+            # else:
+            #     print("[?] No hay registros nuevos.")
 
         elif op == "5":
             try:

@@ -29,6 +29,57 @@ La comunicación se realiza mediante tramas de **64 bytes**.
 | `0x34` | Re-read | Retrocede el puntero de lectura N registros. |
 | `0x52` | Initialize | Formatea o resetea la memoria de registros. |
 
+# Datos recibidos
+
+Estructura del Frame: Cada respuesta de 64 bytes contiene 4 bloques de 16 bytes cada uno. 
+
+Ubicación de los Datos: El Tag está en los bytes 3 a 9 (6 bytes) y la Fecha en los bytes 10 a 14 (4 bytes). 
+
+Codificación de la Fecha: Es un entero de 32 bits Big Endian con un empaquetado de bits específico (Segundos al inicio, Año al final).
+
+Procesar lecturas
+
+Bloque recibido:
+Indice		
+00 08 FE 00 | 59 00 67 5F 2B | 00 04 57 10 9A 00 00
+
+Hay 5 tag almacenados
+*  Tag1=10006F0C09 2026-02-05 16:25:03
+*  Tag2=2300849c30 2026-02-05 16:25:11
+*  Tag3=090053f1b0 2026-02-05 16:25:18
+*  Tag4=090053e0a4 2026-02-05 16:25:24
+*  Tag5=5900675f2b 2026-02-05 16:25:29
+Frames enviados por la sonda, contiene cuatro tag con fecha asosida por frame
+HID Data: 0009160010006f0c09000d98189a0000000917002300849c30002d98189a000000091800090053f1b0004998189a000000091900090053e0a4006198189a0000
+HID Data: 00091a005900675f2b007598189a0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
+dividimos los frames en cuatro bloques
+
+0009160010006f0c09000d98189a0000
+000917002300849c30002d98189a0000
+00091800090053f1b0004998189a0000
+00091900090053e0a4006198189a0000
+00091a005900675f2b007598189a0000
+00000000000000000000000000000000 > finaliza al encontrar el vacio
+
+extraemos de cada bloque los datos asociados al tag
+
+[0,5] puntero_indice (3 bytes) = 000916 
+[6,17] id_tag (6 bytes) = 0010006f0c09 
+[18,20] reservado_1 (3 bits) = 000
+[21,27] tiempo_registro ( bits)= d98189a 
+[28,31] reservado_2 (2 bytes)= 0000
+
+Extraccion de tiempo_registro
+Tag 1 = tiempo_registro = d98189a = 32 bits
+Empaquetado ssssss mmmmmm HHHHH DDDDD AAAAAA
+6 bits segundos
+6 bits minutos
+5 bits hora
+5 bits dia
+4 bits mes
+6 bits año (acumulados desde 2000)
+
 ## 🧩 Decodificación de Fecha (Bit-Packing)
 
 La sonda optimiza el espacio de memoria empaquetando la fecha y hora en un bloque de 32 bits (4 bytes) dentro del campo `date` de cada registro:
@@ -44,6 +95,12 @@ La sonda optimiza el espacio de memoria empaquetando la fecha y hora en un bloqu
 | **Mes** | 4 (22-25) | 1-12 |
 | **Año** | 6 (26-31) | 2000-2063 |
 
+# Byte Offset, Descripción,         Tamaño,  Ejemplo (Hex)
+# 0 - 2,       Índice (Puntero),   3 bytes,  00 09 16
+# 3 - 8,       ID TAG,             6 bytes,  00 10 00 6F 0C 09
+# 9,           Reservado,          1 byte,   00
+# 10 - 13,     FECHA (32 bits),    4 bytes,  0D 98 18 9A
+# 14 - 15,     Reservado,          2 bytes,  00 00
 
 
 ## 🚀 Instalación y Uso

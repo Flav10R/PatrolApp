@@ -72,20 +72,32 @@ class SondaGS6200:
         if res:
             def bcd(b): return (b >> 4) * 10 + (b & 0x0F)
             try:
-                # Mapeo: 7:seg, 8:min, 9:hora, 10:día, 11:mes, 12:año
-                return datetime.datetime(2000 + bcd(res[12]), bcd(res[11]), bcd(res[10]), 
-                                       bcd(res[9]), bcd(res[8]), bcd(res[7]))
-            except: return None
+                # Mapeo según tus logs: Seg=6, Min=7, Hor=8, Dia=9, Mes=10, Año=12
+                return datetime.datetime(2000 + bcd(res[12]), bcd(res[10]), bcd(res[9]), 
+                                       bcd(res[8]), bcd(res[7]), bcd(res[6]))
+            except Exception as e: 
+                return None
         return None
-
-    def enviar_hora(self, dt):
-        """ Sincroniza la hora de la PC a la sonda (Opción 3) """
-        def to_bcd(v): return ((v // 10) << 4) | (v % 10)
-        # s, m, h, d, mes, ?, año
-        datos = [to_bcd(dt.second), to_bcd(dt.minute), to_bcd(dt.hour), 
-                 to_bcd(dt.day), to_bcd(dt.month), 0x00, to_bcd(dt.year % 100)]
-        res = self._enviar_comando(self.CMD_SET_RTC, datos)
-        return True if res and res[5] == self.CMD_SET_RTC else False
+    #
+    
+    def enviar_hora(self, fecha_obj):
+        """ Envía la hora de la pc """
+        if not self.device: return False
+        def to_bcd(val): return ((val // 10) << 4) | (val % 10)
+        
+        datos_fecha = [
+            to_bcd(fecha_obj.second), to_bcd(fecha_obj.minute), 
+            to_bcd(fecha_obj.hour), to_bcd(fecha_obj.day), 
+            to_bcd(fecha_obj.month), 0x00, to_bcd(fecha_obj.year % 100)
+        ]
+        buffer = [0x02, 0x0F, 0x0F, 0x0F, 0x10, 0x21] + datos_fecha + [0x00]*51
+        
+        try:
+            self.ep_out.write(buffer)
+            res = self.ep_in.read(64, timeout=2000)
+            time.sleep(0.5)
+            return True if res[5] == 0x21 else False
+        except: return False
 
     def re_leer_registros(self, n):
         datos = list(n.to_bytes(4, byteorder='little'))

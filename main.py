@@ -6,7 +6,7 @@ def limpiar_pantalla():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def ejecutar_app():
-    sonda = SondaGS6200(log_callback=print)
+    sonda = SondaGS6200() # Puedes quitar log_callback=print para un menú limpio
     
     while True:
         limpiar_pantalla()
@@ -33,55 +33,47 @@ def ejecutar_app():
             print("\n[!] Primero debe conectar la sonda (Opción 1).")
 
         elif op == "2":
-            print(f"\nID Dispositivo: {sonda.obtener_id()}")
+            sid = sonda.obtener_id()
             rtc = sonda.obtener_rtc()
+            print(f"\nID Dispositivo: {sid if sid else 'Error'}")
             print(f"Hora en Sonda: {rtc.strftime('%d/%m/%Y %H:%M:%S') if rtc else 'Error'}")
 
         elif op == "3":
             ahora = datetime.datetime.now()
             if sonda.enviar_hora(ahora):
-                print(f"\n[OK] Hora sincronizada: {ahora.strftime('%H:%M:%S')}")
+                print(f"\n[OK] Hora sincronizada: {ahora.strftime('%d/%m/%Y %H:%M:%S')}")
+            else:
+                print("\n[!] Error al sincronizar hora.")
 
         elif op == "4":
-            print("\nDescargando...")
+            print("\nIniciando descarga...")
             datos = sonda.descargar_datos()
-            # Ejemplo de uso en tu main.py:
-            datos = sonda.descargar_datos()
-
             if datos:
-                print(f"Se descargaron {len(datos)} registros.")
+                print(f"\n[EXITO] Se procesaron {len(datos)} registros.")
                 for reg in datos:
-                    # Aquí aplicamos el formato solicitado: dd/mm/yyyy
-                    fecha_str = reg['fecha'].strftime("%d/%m/%Y %H:%M:%S")
-                    
-                    # Imprime: 0010006F0C09 16/02/2026 14:31:22
-                    print(f"{reg['tag']} {fecha_str}")
+                    print(f"{reg['tag']} {reg['fecha'].strftime('%d/%m/%Y %H:%M:%S')}")
             else:
-                print("No se encontraron nuevos registros.")
-            
-            ########
-            # if datos:
-            #     filename = f"descarga_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-            #     with open(filename, "w") as f:
-            #         for r in datos:
-            #             f.write(f"{r['tag']} {r['fecha'].strftime('%Y-%m-%d %H:%M:%S')}\n")
-            #     print(f"[EXITO] {len(datos)} registros guardados en {filename}")
-            # else:
-            #     print("[?] No hay registros nuevos.")
+                print("\n[?] No se encontraron registros nuevos o la memoria está vacía.")
 
         elif op == "5":
             try:
                 n = int(input("\n¿Cuántos registros hacia atrás desea re-leer?: "))
                 if sonda.re_leer_registros(n):
-                    print(f"[OK] Puntero movido. Ahora use la opción 4.")
-            except: print("[!] Número inválido.")
+                    print(f"[OK] Puntero movido. Ahora use la opción 4 para descargar.")
+                else:
+                    print("[!] La sonda rechazó el comando.")
+            except: print("[!] Ingrese un número entero válido.")
 
         elif op == "6":
             conf = input("\n¿Confirmar borrado total de memoria? (S/N): ")
             if conf.upper() == 'S':
-                if sonda.inicializar_memoria(): print("[OK] Memoria inicializada.")
+                if sonda.inicializar_memoria(): 
+                    print("[OK] Memoria borrada con éxito.")
+                else:
+                    print("[!] Error al intentar borrar la memoria.")
 
         elif op == "0":
+            print("\nSaliendo...")
             break
 
         input("\nPresione Enter para volver al menú...")

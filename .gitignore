@@ -8,6 +8,8 @@ descarga_*.txt
 # Archivos temporales del sistema (Mac/Windows)
 .DS_Store
 Thumbs.db
+*.txt
+*.bak
 # Archivos de compilacion
 build/
 dist/

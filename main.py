@@ -16,10 +16,10 @@ def ejecutar_app():
         print(f"========================================")
         print("1. Conectar Sonda")
         print("2. Ver Info (ID y Hora actual)")
-        print("3. Sincronizar Hora con PC")
+        print("3. Sincronizar reloj c/ hora de PC <Verificar la hora del PC>")
         print("4. DESCARGAR REGISTROS")
-        print("5. Re-descargar registros (CMD 34)")
-        print("6. Borrar Memoria Sonda (CMD 52)")
+        print("5. Re-descargar registros ")
+        print("6. Borrar Memoria Sonda <irreversible!>")
         print("0. Salir")
         print("----------------------------------------")
         
